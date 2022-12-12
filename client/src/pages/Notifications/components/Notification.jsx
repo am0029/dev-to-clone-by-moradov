@@ -1,0 +1,67 @@
+import { useNavigate } from 'react-router-dom';
+import tw, { styled } from 'twin.macro';
+import { createPostUrl } from '../../../helpers/string';
+
+const Notification = ({ notification: { type, sender, receiver, post, comment } }) => {
+  const navigate = useNavigate();
+
+  return (
+    sender &&
+    receiver && (
+      <Wrapper>
+        <Avatar src={sender.picture.url} onClick={() => navigate(`/${sender.username}`)} />
+        <Desc>
+          {type === 'like' && post ? (
+            <>
+              <Bold onClick={() => navigate(`/${sender.username}`)}>{sender.name}</Bold> به پست شما واکنش نشون داده شد{' '}
+              <Bold
+                onClick={() =>
+                  navigate(`/${receiver.username}/${createPostUrl(post.title, post.id)}`)
+                }>
+                {post.title}
+              </Bold>
+            </>
+          ) : type === 'comment' && post ? (
+            <>
+              <Bold onClick={() => navigate(`/${sender.username}`)}>{sender.name}</Bold> 
+              کامنت گذاشته در پست شما {comment?.body} on
+              <Bold
+                onClick={() =>
+                  navigate(`/${receiver.username}/${createPostUrl(post.title, post.id)}`)
+                }>
+                {' ' + post.title}
+              </Bold>
+            </>
+          ) : type === 'follow' ? (
+            <>
+              <Bold onClick={() => navigate(`/${sender.username}`)}>{sender.name}</Bold> followed
+              you
+            </>
+          ) : (
+            post && (
+              <>
+                <Bold onClick={() => navigate(`/${sender.username}`)}>{sender.name}</Bold> ایجاد پست جدید{' '}
+                <Bold
+                  onClick={() =>
+                    navigate(`/${sender.username}/${createPostUrl(post.title, post.id)}`)
+                  }>
+                  {post.title}
+                </Bold>
+              </>
+            )
+          )}
+        </Desc>
+      </Wrapper>
+    )
+  );
+};
+
+const Desc = tw.div``;
+
+const Avatar = tw.img`inline mr-sm cursor-pointer w-16 h-16 rounded-full`;
+
+const Bold = tw.h3`cursor-pointer inline font-bold hover:(underline text-blue)`;
+
+const Wrapper = tw.div`w-full flex items-center px-md py-sm bg-white border border-light-gray rounded-md`;
+
+export default Notification;
